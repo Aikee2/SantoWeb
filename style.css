@@ -1,0 +1,1088 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Noto Sans', sans-serif;
+
+  background-image: url("Files/Background/1.jpg");
+  background-position: center;
+  background-size: cover;     /* always fills viewport */
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* keeps it fixed even on scroll */
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    font-family: 'Lucida Handwriting', cursive;
+    text-align: center;
+    padding: 0px;
+    color: transparent;
+    color: white;
+}
+
+.top-section {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  position: sticky;   /* sticks to top */
+  top: 0;             /* top of viewport */
+  z-index: 1000;      /* make sure it stays above cards */
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.tabs-left {
+  justify-content: flex-start;
+}
+
+.tabs-right {
+  justify-content: flex-end;
+}
+
+.tabs-left,
+.tabs-right {
+  display: flex;
+  gap: 10px;
+}
+
+.tabs-left .tab {
+  min-width: 220px;
+}
+
+.tabs-center {
+  text-align: center;
+}
+
+.tab.title {
+  font-weight: 600;
+  letter-spacing: 2px;
+  pointer-events: none;
+  border-left: none;
+  border-right: none;
+}
+
+.tab {
+  padding: 18px 24px;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.tab:not(.title) {
+  position: relative;
+}
+
+.tab:not(.title)::after {
+  content: "";
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  right: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.tab:not(.title)::before {
+  content: "";
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.tabs-left .tab:first-child::before {
+  display: none;
+}
+
+.tabs-right .tab:last-child::after {
+  display: none;
+}
+
+.tab::before,
+.tab::after {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.5);
+  transition: top 0.3s ease, bottom 0.3s ease, background 0.3s ease;
+}
+
+.tab:hover::before,
+.tab:hover::after {
+  top: 15%;
+  bottom: 15%;
+  background: rgba(255, 255, 255, 0.8); /* slightly brighter on hover */
+}
+
+.buttons {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+}
+
+.buttons button {
+  background: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.separator {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.saints-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* portrait cards */
+  justify-content: center;   /* centers grid */
+  gap: 20px;                 /* space between cards */
+  padding: 40px 20px;        /* space around the grid */
+  max-width: 1000px;         /* limits width of all cards together */
+  margin: 0 auto;            /* center grid in the page */
+}
+
+.saint-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.077);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 5px;
+  width: 180px;      /* fixed width to keep portrait shape */
+
+  transition: transform 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.saint-card:hover {
+  transform: scale(1.05);                   /* slightly bigger */
+  background: rgba(255, 255, 255, 0.25);   /* a bit whiter */
+  backdrop-filter: blur(12px);              /* slightly stronger blur */
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.saint-card img {
+  width: 100%;
+  height: 240px;     /* fixed portrait height */
+  object-fit: cover; /* crops without stretching */
+  border-radius: 8px;
+}
+
+.saint-name {
+  margin-top: 5px;
+  font-size: 0.85rem;
+  color: white;
+  text-align: center;
+  text-shadow: 0 0 3px rgba(0,0,0,0.7);
+}
+
+.selected-saint {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: background 0.35s ease;
+  z-index: 1500;
+}
+
+.selected-saint.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.selected-image {
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  z-index: 1000;
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.selected-image img {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 12px; /* smooth rounded corners */
+  transition: all 0.4s ease, box-shadow 0.4s ease; /* smooth scaling + shadow */
+  z-index: 1001;
+
+  /* Glassy background behind image */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  /* Shadow for depth */
+  box-shadow:
+      0 25px 50px rgba(0, 0, 0, 0.4),   /* main shadow */
+      inset 0 1px 0 rgba(255, 255, 255, 0.2); /* subtle inner glow */
+
+  /* Theme-colored border */
+  border: 3px solid;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(45deg, #d00000, #FB2056);
+
+  /* Make sure image stays cropped inside rounded border */
+  object-fit: cover;
+  object-position: center;
+}
+
+.selected-info {
+  position: fixed;
+  top: 50px;
+  left: 66%;
+  transform: translate(-50%, 0) scale(1);
+  width: 60%;
+  max-width: 940px;
+  height: 80vh;
+  padding: 20px;
+
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+  display: flex;              /* 👈 ADD THIS */
+  flex-direction: column;     /* 👈 ADD THIS */
+
+  overflow: hidden; /* hide anything outside */
+  opacity: 0;
+  transform: translate(-50%, 0) scale(1) translateX(24px); /* initial slide */
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+  z-index: 1600;
+}
+
+.selected-saint.active .selected-info {
+  opacity: 1;
+}
+
+.selected-saint.show-info {
+  background: rgba(0,0,0,0.35); /* slightly darker behind panel */
+}
+
+/* panel active / pop */
+.selected-saint.show-info .selected-info {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1.02);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Text fade-in sequence */
+.selected-info h2,
+.selected-info h4,
+.selected-info p,
+.selected-info .info-desc{
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.selected-saint.show-info h2 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+.selected-saint.show-info h4 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+.selected-saint.show-info p {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.25s;
+}
+
+.selected-saint.show-info .info-desc {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}
+
+.hide-prayer-section .prayers-grid,
+.hide-prayer-section .prayer-card {
+  display: none !important;
+}
+
+/* Mobile / tablets */
+@media (max-width: 768px) {
+  .selected-info {
+    top: 20px;
+    width: 95%;
+    min-height: 50vh;
+    border-radius: 15px;
+    padding: 15px;
+  }
+
+  .selected-info h2 {
+    font-size: 1.5rem;
+  }
+
+  .selected-info p {
+    font-size: 0.9rem;
+  }
+}
+
+.info-title {
+  font-family: 'Playfair Display', serif;
+  color: #f5f5f5;
+  font-size: 2rem;
+  margin-bottom: 5px;
+}
+
+.info-sub {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;     /* slightly smaller than title */
+  font-weight: 500;       /* bold but not too much */
+  color: #ffffff;         /* plain white */
+  margin-top: 6px;        /* small space from title */
+  margin-bottom: 4px;     /* space before feast day */
+  opacity: 0.95;          /* subtle transparency for consistency */
+}
+
+.info-feast {
+  font-style: italic;
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+
+.info-separator {
+    height: 1px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.652);
+    margin: 0px 0;
+    opacity: 0;               /* start hidden */
+    transition: opacity 0.3s ease; /* smooth fade in */
+}
+
+.info-desc {
+  line-height: 1.6;
+  font-size: 0.95rem;
+
+  max-height: calc(80vh - 150px); /* height minus title + sub + feast */
+  overflow-y: auto; /* vertical scroll */
+  padding-right: 10px; /* space for scrollbar */
+}
+
+.info-feast, .info-desc {
+    font-family: 'Noto Sans', sans-serif;
+    color: #e0e0e0;
+}
+
+.info-desc::-webkit-scrollbar {
+  width: 6px;
+}
+
+.info-desc::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 3px;
+}
+
+.info-desc::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+}
+
+.no-scroll {
+    overflow: hidden;
+    height: 100vh; /* prevent scrolling via touch/mouse wheel */
+}
+
+.layout-switcher {
+    position: fixed;           
+    top: 70px;
+    left: 10px;
+    z-index: 1200;             
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 8px;              /* smaller padding since button fills it */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: background 0.3s ease, border 0.3s ease;
+}
+
+.layout-switcher button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 100%;       /* fills the layout-switcher */
+    height: 100%;      /* fills the layout-switcher */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.layout-switcher img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    transition: transform 0.4s ease;
+}
+
+.layout-switcher:hover {
+    background: rgba(255, 255, 255, 0.25);  /* brighter on hover */
+}
+
+.layout-switcher img.active {
+    transform: rotate(180deg);
+}
+
+/* List layout */
+.saints-grid.list-layout {
+    grid-template-columns: 1fr; /* 1 column = vertical list */
+    gap: 15px;                  /* space between list items */
+    padding: 20px;
+    max-width: 800px;            /* adjust width of the list */
+    margin: 0 auto;              /* center it */
+}
+
+.list-layout .saint-card {
+    flex-direction: row;       /* horizontal instead of vertical */
+    align-items: center;
+    gap: 20px;
+    width: 100%;               /* fill the grid column */
+    padding: 10px 15px;        /* more breathing room */
+}
+
+.list-layout .saint-card img {
+    width: 200px;               /* smaller image for horizontal list */
+    height: 200px;              /* square */
+    flex-shrink: 0;             /* prevent image from shrinking */
+}
+
+.list-layout .saint-card .saint-name {
+    font-size: 1rem;
+    text-align: left;
+}
+
+.saints-grid .saint-card {
+    transition: all 0.4s ease;
+}
+
+/* hide info by default (cards mode) */
+.list-info {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  color: white;
+  font-family: 'Noto Sans', sans-serif;
+}
+
+.list-layout .list-info {
+  display: flex; /* only show in list layout */
+}
+
+.list-nick {
+  font-weight: 500;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.list-feast {
+  font-style: italic;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.list-desc {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  line-height: 1.2;
+}
+
+.saints-grid.list-layout .saint-card .saint-name {
+    display: none;
+}
+
+.prayers-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.prayer-card {
+  width: 100%;
+  min-height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.103);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.prayer-card:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.selected-prayer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 2000;
+}
+
+.selected-prayer.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.selected-prayer-info {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translate(-50%, 0) translateX(24px);
+  width: 60%;
+  max-width: 940px;
+  height: 80vh;
+  padding: 20px;
+
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+
+  z-index: 2100;
+}
+
+.selected-prayer.active .selected-prayer-info {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1.02);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.45),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+
+.selected-info h2,
+.selected-info h4,
+.selected-info p,
+.selected-info .info-desc {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* Prayer text animation */
+.selected-prayer-info h2,
+.selected-prayer-info .prayer-content {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.selected-prayer.active .selected-prayer-info h2 {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+.selected-prayer.active .selected-prayer-info .prayer-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.25s;
+}
+
+.prayer-title-full {
+  font-family: 'Playfair Display', serif;
+  color: #f5f5f5;
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.prayer-content {
+  font-family: 'Noto Sans', sans-serif;
+  color: #e0e0e0;
+  line-height: 1.1;
+  font-size: 1.5rem;
+
+  text-align: center;
+
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.prayer-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.prayer-content::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 3px;
+}
+
+.prayer-content::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+}
+
+.prayer-separator {
+  height: 1px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.652);
+  margin: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.prayer-title,
+.prayer-title-full {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  color: #f5f5f5;
+
+  text-align: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.prayer-short {
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 0.8rem;
+  opacity: 0.6;
+  line-height: 1.2;
+  color: white;
+  text-align: center;
+}
+
+.prayers-container {
+  display: none;
+}
+
+.schedules-container {
+  display: none;
+  padding: 40px 20px;
+  color: white;
+}
+
+.calendar-container {
+  max-width: 900px;
+  margin: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-header button {
+  padding: 8px 14px;
+  border: none;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.day {
+  padding: 20px;
+  text-align: center;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  position: relative;
+}
+
+.day:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.highlight {
+  border: 2px solid #d00000;
+  font-weight: bold;
+}
+
+/* Bottom Event Panel */
+
+.event-panel {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  border-radius: 20px;
+  padding: 20px;
+
+  max-height: 0;
+  overflow: hidden;
+
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.4s ease;
+
+  color: white;
+}
+
+.event-panel.active {
+  max-height: 400px; /* Adjust if needed */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.calendar-wrapper {
+  max-width: 1000px;
+  margin: auto;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 25px;
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.day.selected {
+  background: #d00000;
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px #d00000;
+  font-weight: bold;
+}
+
+.event-dot {
+  width: 8px;
+  height: 8px;
+  background: #d00000;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+}
+
+.today {
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px white;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ================= LITURGICAL SEASON COLORS ================= */
+
+.season-Lent {
+  background: rgba(128, 0, 128, 0.25); /* purple */
+  border: 1px solid rgba(128, 0, 128, 0.6);
+}
+
+.season-Easter {
+  background: rgba(255, 223, 0, 0.25); /* gold/yellow */
+  border: 1px solid rgba(255, 223, 0, 0.6);
+}
+
+.season-Christmas {
+  background: rgba(0, 150, 255, 0.25); /* blue */
+  border: 1px solid rgba(0, 150, 255, 0.6);
+}
+
+.season-Ordinary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.selected-saint {
+  display: none;
+}
+
+.selected-saint.active {
+  display: block;
+}
+
+.hide-top-section .top-section {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+@media (max-width: 768px) {
+
+  /* Overlay becomes vertical stack */
+  .selected-saint.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    padding-top: 20px;
+  }
+
+  /* Image goes top naturally */
+  .selected-image img {
+    position: relative !important;
+    width: 85% !important;
+    height: auto !important;
+    top: auto !important;
+    left: auto !important;
+  }
+
+  .selected-info {
+    position: relative !important;
+    width: 85% !important;
+    max-height: none !important;
+    height: auto !important;
+
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+
+    margin-top: 170px;
+    margin-bottom: 20px;
+
+    border-radius: 25px;
+  }
+
+  .tabs {
+    grid-template-columns: 1fr auto 1fr; /* keep 3 columns */
+    align-items: center;
+    width: 100% !important;
+  }
+
+  .tab {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .tabs-left .tab {
+    min-width: auto;
+  }
+
+  .tabs-right {
+    justify-content: center;
+  }
+
+  .tabs-left,
+  .tabs-right {
+    gap: 5px;
+  }
+
+  .tabs-center {
+    transform: translateX(-35px); /* move slightly left */
+  }
+
+  /* MOBILE GRID MODE */
+  .saints-grid.cards-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 70px);
+    justify-content: center;
+    gap: 15px;
+    padding: 10px;
+  }
+
+  /* MOBILE LIST MODE */
+  .saints-grid.list-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .saint-card {
+    width: 100% !important;
+    max-width: 100% !important;   /* 🔥 make them small */
+    margin: 0 auto !important;
+    padding: 3px !important;
+  }
+
+  .saint-card img {
+    height: 80px !important;
+    width: 100% !important;
+    object-fit: cover;
+  }
+
+  .layout-switcher {
+  top: 40px !important;   /* move it lower or higher */
+  left: 5px !important;     /* adjust horizontal position */
+  transform: scale(0.85);   /* make it slightly smaller (optional but clean) */
+  }
+
+  /* ✅ MOBILE LIST MODE (Clean Horizontal Layout) */
+  .saints-grid.list-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px;
+    width: 70%;
+    margin: 0 auto;
+  }
+
+  /* Each row */
+  .saints-grid.list-layout .saint-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 15px;
+    padding: 6px 10px !important;
+    min-height: 70px;
+  }
+
+  /* Image inside list */
+  .saints-grid.list-layout .saint-card img {
+    width: 70px !important;
+    height: 70px !important;
+    border-radius: 10px;
+  }
+
+  /* Text section */
+  .saints-grid.list-layout .list-info {
+    text-align: left;
+    font-size: 0.55rem;
+  }
+
+  .saints-grid.list-layout .list-nick {
+    font-size: 0.50rem !important;
+  }
+
+  .saints-grid.list-layout .list-feast {
+    font-size: 0.45rem !important;
+  }
+
+  .saints-grid.list-layout .list-desc {
+    font-size: 0.35rem !important;
+    line-height: 1.1;
+  }
+
+  .prayer-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+
+    min-height: 80px !important;   /* smaller height */
+    padding: 12px 14px !important; /* less padding */
+
+    border-radius: 10px;
+  }
+
+  .prayers-grid {
+    width: 70% !important;
+    margin: 0 auto !important;
+    padding: 15px 0 !important;
+    transform: translateX(-12px);
+  }
+
+  .prayers-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .prayer-title {
+    font-size: 1.4rem !important;
+  }
+
+  .prayer-short {
+    font-size: 0.65rem !important;
+  }
+
+  .selected-prayer-info {
+    width: 79% !important;
+    max-width: none !important;
+
+    height: auto !important;
+    max-height: 85vh !important;
+
+    top: 20px !important;
+    padding: 18px !important;
+    border-radius: 18px !important;
+  }
+  .prayer-title-full {
+    font-size: 1.6rem !important;
+    margin-bottom: 12px !important;
+  }
+
+  .prayer-content {
+    font-size: 0.9rem !important;
+    line-height: 1.3 !important;
+    margin-top: 0 !important;
+  }
+
+  .day {
+    font-size: 0.1rem !important;
+    padding: 6px !important;
+    font-size: 0.8rem !important;
+  }
+}
