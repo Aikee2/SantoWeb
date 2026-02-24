@@ -877,6 +877,12 @@ button:disabled {
   transition: opacity 0.3s ease;
 }
 
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 @media (max-width: 768px) {
 
   /* Overlay becomes vertical stack */
@@ -887,6 +893,8 @@ button:disabled {
     justify-content: flex-start;
     overflow-y: auto;
     padding-top: 20px;
+    opacity: 1;
+    pointer-events: auto;
   }
 
   /* Image goes top naturally */
@@ -908,7 +916,7 @@ button:disabled {
     left: auto !important;
     transform: none !important;
 
-    margin-top: 170px;
+    margin-top: 190px;
     margin-bottom: 20px;
 
     border-radius: 25px;

@@ -696,19 +696,6 @@ cards.forEach(card => {
     clone.style.objectFit = 'cover';
     clone.style.objectPosition = 'center';
 
-    // Frosted glass border effect
-    clone.style.background = 'rgba(255,255,255,0.12)';  // semi-transparent glass
-    clone.style.backdropFilter = 'blur(12px)';
-    clone.style.webkitBackdropFilter = 'blur(12px)';
-
-    // subtle inset glow like glass edges
-    clone.style.boxShadow = `
-      0 25px 50px rgba(0,0,0,0.4),     /* normal shadow */
-      inset 0 0 10px rgba(255,255,255,0.2)  /* inner frosty glow */
-    `;
-
-    // optional thin border to emphasize edges
-    clone.style.border = '1.5px solid rgba(255,255,255,0.35)';
     document.body.appendChild(clone);
 
     // 👀 Get saint info safely
